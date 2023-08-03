@@ -15,18 +15,19 @@ const getWeatherData = async (cityParam?: string) => {
 
   if (!response.ok) {
     // This will activate the closest `error.ts` Error Boundary
-    throw new Error('Failed to fetch data')
+    throw new Error(response.statusText)
   }
   return response.json()
 }
 
 type PageProps = {
   params: { slug: string }
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: { ['city']: string }
 }
 
 export default async function Home({ searchParams }: PageProps) {
-  const data = await getWeatherData(searchParams['city'] as string)
+  const urlParams = searchParams['city']
+  const data = await getWeatherData(urlParams ?? null)
 
   return (
     <main className="h-screen flex justify-center items-center">

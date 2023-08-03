@@ -47,7 +47,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = async ({ data }) => {
     ? `from-cyan-600 to-cyan-200`
     : `from-slate-900 to-indigo-900`
   return (
-    <>
+    <div className="flex flex-col gap-6 justify-center items-center">
       <div
         className={`p-8 bg-gradient-to-r ${gradient} rounded-2xl shadow-2xl text-white text-2xl w-[800px] max-w-full relative capitalize overflow-hidden`}
       >
@@ -82,6 +82,6 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = async ({ data }) => {
         </div>
       </div>
       <SearchBox />
-    </>
+    </div>
   )
 }
