@@ -83,10 +83,10 @@ export const SearchBox: React.FC = () => {
         setSelectedValue(null)
       }
     }
-  }, [selectedValue])
+  }, [selectedValue, createQueryString, pathname, router])
 
   return (
-    <div className="w-72">
+    <div className="w-72 max-w-full">
       <Combobox value={selectedValue} onChange={setSelectedValue}>
         <div className="relative mt-1">
           <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
@@ -96,7 +96,7 @@ export const SearchBox: React.FC = () => {
               displayValue={(address: AddressData) =>
                 address ? address.tekst : ''
               }
-              className="w-full border-none py-3 px-4 text-base leading-5 text-gray-900 focus:ring-0 focus-visible:outline-none"
+              className="w-full border-none px-4 py-3 text-base leading-5 text-gray-900 focus:ring-0 focus-visible:outline-none"
             />
           </div>
           <Transition

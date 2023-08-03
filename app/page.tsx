@@ -5,7 +5,7 @@ const getWeatherData = async (cityParam?: string) => {
   const response = await fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=${
       cityParam ?? defaultCity
-    }&units=metric&lang=en&appid=${process.env.WEATHERAPP_APIKEY}`,
+    }&units=metric&lang=da&appid=${process.env.WEATHERAPP_APIKEY}`,
     {
       next: {
         tags: ['weather'],
@@ -30,8 +30,10 @@ export default async function Home({ searchParams }: PageProps) {
   const data = await getWeatherData(urlParams ?? null)
 
   return (
-    <main className="h-screen flex justify-center items-center">
-      <WeatherWidget data={data} />
+    <main className="flex h-screen items-center justify-center">
+      <div className="container">
+        <WeatherWidget data={data} />
+      </div>
     </main>
   )
 }
