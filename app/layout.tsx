@@ -5,7 +5,7 @@ import { Raleway } from 'next/font/google'
 const raleway = Raleway({
   subsets: ['latin'],
   display: 'swap',
-  weight: ['200', '300', '800'],
+  weight: ['100', '200', '300', '800'],
   variable: '--font-raleway',
 })
 
@@ -21,7 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${raleway.variable} bg-cyan-100/50`}>{children}</body>
+      <body className={`${raleway.variable} bg-cyan-100/50 font-body`}>
+        {children}
+      </body>
     </html>
   )
 }

@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,8 +9,8 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      body: ['var(--font-raleway)'],
-      display: ['var(--font-raleway)'],
+      body: ['var(--font-raleway)', ...defaultTheme.fontFamily.sans],
+      display: ['var(--font-raleway)', ...defaultTheme.fontFamily.sans],
     },
     extend: {},
   },
