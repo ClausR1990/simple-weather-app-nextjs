@@ -4,7 +4,7 @@ const getWeatherData = async (cityParam?: string) => {
   const defaultCity = 'copenhagen'
   const response = await fetch(
     `https://api.openweathermap.org/data/2.5/weather?q=${
-      cityParam ?? defaultCity
+      cityParam?.trim() ?? defaultCity
     }&units=metric&lang=da&appid=${process.env.WEATHERAPP_APIKEY}`,
     {
       next: {

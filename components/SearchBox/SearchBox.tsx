@@ -34,7 +34,7 @@ type AddressData = z.infer<typeof addressData>
 type AddressDataReponse = z.infer<typeof addressResponse>
 type AddressDetailsResponce = z.infer<typeof addressDetailsResponse>
 
-export const SearchBox: React.FC = () => {
+const SearchBox: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()!
@@ -109,46 +109,52 @@ export const SearchBox: React.FC = () => {
     }
   }, [selectedValue, createQueryString, pathname, router])
 
+  const isJsEnabled = typeof window !== 'undefined'
+
   return (
-    <div className="w-72 max-w-full">
-      <Combobox value={selectedValue} onChange={setSelectedValue}>
-        <div className="relative mt-1">
-          <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
-            <Combobox.Input
-              onChange={event => setInputValue(event.target.value)}
-              placeholder="Search address"
-              displayValue={(address: AddressData) =>
-                address ? address.description : ''
-              }
-              className="w-full border-none px-4 py-3 text-base leading-5 text-gray-900 focus:ring-0 focus-visible:outline-none"
-            />
+    isJsEnabled && ( // This component will only render if Javascipt is enabled in the browser
+      <div className="w-72 max-w-full">
+        <Combobox value={selectedValue} onChange={setSelectedValue}>
+          <div className="relative mt-1">
+            <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+              <Combobox.Input
+                onChange={event => setInputValue(event.target.value)}
+                placeholder="Søg på adresse"
+                displayValue={(address: AddressData) =>
+                  address ? address.description : ''
+                }
+                className="w-full border-none px-4 py-3 text-base leading-5 text-gray-900 focus:ring-0 focus-visible:outline-none"
+              />
+            </div>
+            <Transition
+              as={Fragment}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+              afterLeave={() => setInputValue('')}
+            >
+              <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {addressData &&
+                  addressData.predictions.map((address, index) => (
+                    <Combobox.Option
+                      key={index}
+                      value={address}
+                      className={({ active }) =>
+                        `relative cursor-default select-none py-2 pl-3 pr-4 ${
+                          active ? 'bg-teal-600 text-white' : 'text-gray-900'
+                        }`
+                      }
+                    >
+                      {address.description}
+                    </Combobox.Option>
+                  ))}
+              </Combobox.Options>
+            </Transition>
           </div>
-          <Transition
-            as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-            afterLeave={() => setInputValue('')}
-          >
-            <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {addressData &&
-                addressData.predictions.map((address, index) => (
-                  <Combobox.Option
-                    key={index}
-                    value={address}
-                    className={({ active }) =>
-                      `relative cursor-default select-none py-2 pl-3 pr-4 ${
-                        active ? 'bg-teal-600 text-white' : 'text-gray-900'
-                      }`
-                    }
-                  >
-                    {address.description}
-                  </Combobox.Option>
-                ))}
-            </Combobox.Options>
-          </Transition>
-        </div>
-      </Combobox>
-    </div>
+        </Combobox>
+      </div>
+    )
   )
 }
+
+export default SearchBox

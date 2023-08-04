@@ -1,9 +1,15 @@
+import dynamic from 'next/dynamic'
 import z from 'zod'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'
 import { degreesToCompass } from '@/utils/degreesToCompass'
-import { SearchBox } from '../SearchBox'
 import Image from 'next/image'
+import { SearchBoxServerComponent, Skeleton } from '../SearchBox'
+
+const SearchBox = dynamic(() => import('../SearchBox'), {
+  loading: () => <Skeleton />,
+  ssr: false,
+})
 
 const weather = z.object({
   description: z.string(),
@@ -41,16 +47,16 @@ export interface WeatherWidgetProps {
   data: WeatherData
 }
 
-const currentDate = dayjs(new Date()).locale('da').format('dddd, D. MMMM')
+// const currentDate = dayjs(new Date()).locale('da').format('dddd, D. MMMM')
 
 export const WeatherWidget: React.FC<WeatherWidgetProps> = async ({ data }) => {
   const gradient = data.weather[0].icon.includes('d')
     ? `from-cyan-600 to-cyan-200`
     : `from-slate-900 to-indigo-900`
   return (
-    <div className="flex flex-col items-center justify-center gap-6">
+    <div className="mx-auto flex w-[800px] max-w-full flex-col items-center justify-center gap-6">
       <div
-        className={`bg-gradient-to-r p-8 ${gradient} grid max-w-full grid-cols-1 overflow-hidden rounded-2xl text-2xl capitalize text-white shadow-2xl md:grid-cols-2`}
+        className={`bg-gradient-to-r p-8 ${gradient} grid w-full max-w-full grid-cols-1 overflow-hidden rounded-2xl text-2xl capitalize text-white shadow-2xl md:grid-cols-2`}
       >
         <div>
           <h2 className="mb-4 text-xl">{data.weather[0].description}</h2>
@@ -60,14 +66,14 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = async ({ data }) => {
               <span className="font-thin">°</span>
             </div>
             <div className="pl-4">
-              <div className="text-xl">{currentDate}</div>
-              <div className="text-base font-bold">{data.name}</div>
+              {/* <div className="text-xl">{currentDate}</div> */}
+              <div className="text-xl font-bold">{data.name}</div>
               <ul className="mt-2 flex gap-2 text-sm">
                 <li className="">
-                  Humidity: <b>{data?.main.humidity}</b>
+                  Luftfugtighed: <b>{data?.main.humidity}</b>
                 </li>
                 <li className="">
-                  Wind:{' '}
+                  Vind:{' '}
                   <b>
                     {Math.round(data?.wind.speed)}{' '}
                     <span className="lowercase">m/s</span>{' '}
@@ -86,7 +92,14 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = async ({ data }) => {
           height={200}
         />
       </div>
-      <SearchBox />
+      {<SearchBox />}
+      {/**
+       * Progressive Enhancement
+       * {<SearchBoxServerComponent />} will only render if Javascript is disabled in the browser
+       */}
+      <noscript className="w-full">
+        <SearchBoxServerComponent placeholder="By" buttonLabel="Søg" />
+      </noscript>
     </div>
   )
 }
