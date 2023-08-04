@@ -5,28 +5,34 @@ import { Combobox, Transition } from '@headlessui/react'
 import { z } from 'zod'
 
 const addressData = z.object({
-  adgangsadresseid: z.string(),
-  id: z.string(),
-  status: z.number(),
-  darstatus: z.number(),
-  vejkode: z.string(),
-  vejnavn: z.string(),
-  adresseringsvejnavn: z.string(),
-  husnr: z.string(),
-  etage: z.string(),
-  dør: z.string(),
-  postnr: z.string(),
-  postnrnavn: z.string(),
+  description: z.string(),
+  place_id: z.string(),
+  structured_formatting: z.object({
+    main_text: z.string(),
+  }),
+})
+
+const addressDetailsComponents = z.object({
+  long_name: z.string(),
+  short_name: z.string(),
+  types: z.array(z.string()),
+})
+
+const addressDetailsResponse = z.object({
+  result: z.object({
+    address_components: z.array(addressDetailsComponents),
+    formatted_address: z.string(),
+  }),
+  status: z.string(),
 })
 
 const addressResponse = z.object({
-  data: z.array(addressData).or(addressData),
-  tekst: z.string(),
-  forslagstekst: z.string(),
-  caretpos: z.number(),
+  predictions: z.array(addressData),
+  status: z.string(),
 })
-
-type AddressData = z.infer<typeof addressResponse>
+type AddressData = z.infer<typeof addressData>
+type AddressDataReponse = z.infer<typeof addressResponse>
+type AddressDetailsResponce = z.infer<typeof addressDetailsResponse>
 
 export const SearchBox: React.FC = () => {
   const router = useRouter()
@@ -36,16 +42,17 @@ export const SearchBox: React.FC = () => {
   const [selectedValue, setSelectedValue] = React.useState<AddressData | null>(
     null,
   )
-  const [addressData, setAddressData] = useState<AddressData[] | null>(null)
+  const [addressData, setAddressData] = useState<AddressDataReponse | null>(
+    null,
+  )
 
   useEffect(() => {
     if (inputValue.length < 3) return
     const getAddressData = async (value: string) => {
-      //TODO change this endpoint to Google Places API
       const response = await fetch(
-        `https://api.dataforsyningen.dk/autocomplete?q=${encodeURIComponent(
+        `/addresses/maps/api/place/autocomplete/json?input=${encodeURIComponent(
           value,
-        )}&fuzzy`,
+        )}&key=${process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}&language=da`,
       )
 
       if (!response.ok) {
@@ -66,22 +73,39 @@ export const SearchBox: React.FC = () => {
     [searchParams],
   )
 
+  const getAddressDetails = async (placeId: string) => {
+    const response = await fetch(
+      `/addresses/maps/api/place/details/json?place_id=${placeId}&key=${process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}&fields=address_components%2Cformatted_address&language=en`,
+    )
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
+    }
+
+    const data = (await response.json()) as AddressDetailsResponce
+    const locality = data.result.address_components.filter(item =>
+      item.types.includes('locality'),
+    )[0]
+    return locality.short_name
+  }
+
   useEffect(() => {
-    if (
-      selectedValue &&
-      typeof selectedValue.data === 'object' &&
-      !Array.isArray(selectedValue.data)
-    ) {
-      const value = selectedValue.data.postnrnavn
-      if (value) {
-        router.push(
-          pathname +
-            '?' +
-            createQueryString('city', encodeURIComponent(value.split(' ')[0])),
-        )
-        setInputValue('')
-        setSelectedValue(null)
-      }
+    if (selectedValue && selectedValue.place_id) {
+      ;(async () => {
+        const placeId = selectedValue.place_id
+        const addressDetails = await getAddressDetails(placeId)
+        if (addressDetails) {
+          router.push(
+            pathname +
+              '?' +
+              createQueryString(
+                'city',
+                encodeURIComponent(addressDetails.toLowerCase()),
+              ),
+          )
+          setInputValue('')
+          setSelectedValue(null)
+        }
+      })()
     }
   }, [selectedValue, createQueryString, pathname, router])
 
@@ -94,7 +118,7 @@ export const SearchBox: React.FC = () => {
               onChange={event => setInputValue(event.target.value)}
               placeholder="Search address"
               displayValue={(address: AddressData) =>
-                address ? address.tekst : ''
+                address ? address.description : ''
               }
               className="w-full border-none px-4 py-3 text-base leading-5 text-gray-900 focus:ring-0 focus-visible:outline-none"
             />
@@ -108,7 +132,7 @@ export const SearchBox: React.FC = () => {
           >
             <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {addressData &&
-                addressData.map((address, index) => (
+                addressData.predictions.map((address, index) => (
                   <Combobox.Option
                     key={index}
                     value={address}
@@ -118,7 +142,7 @@ export const SearchBox: React.FC = () => {
                       }`
                     }
                   >
-                    {address.forslagstekst}
+                    {address.description}
                   </Combobox.Option>
                 ))}
             </Combobox.Options>
