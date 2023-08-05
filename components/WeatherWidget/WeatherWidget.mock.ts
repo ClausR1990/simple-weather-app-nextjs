@@ -20,7 +20,16 @@ export const data: WeatherData = {
     humidity: 69,
   },
   visibility: 10000,
-  wind: { speed: 3.6, deg: 250 },
+  wind: {
+    speed: 0.62,
+    deg: 349,
+    gust: 1.18,
+  },
+  rain: {
+    '1h': 3.16,
+  },
+  timezone: 7200,
+  dt: 1661870592,
   clouds: { all: 75 },
   id: 2618425,
   name: 'København',

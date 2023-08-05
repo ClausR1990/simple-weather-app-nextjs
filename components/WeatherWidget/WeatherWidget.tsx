@@ -9,25 +9,17 @@ const SearchBox = dynamic(() => import('../SearchBox'), {
   ssr: false,
 })
 
-const weather = z.object({
-  description: z.string(),
-  main: z.string(),
-  id: z.number(),
-  icon: z.string(),
-})
-
-const weatherData = z.object({
-  id: z.number(),
-  coord: z.object({
-    lon: z.number(),
-    lat: z.number(),
-  }),
+export const weatherDataSchema = z.object({
+  coord: z.object({ lon: z.number(), lat: z.number() }),
+  weather: z.array(
+    z.object({
+      id: z.number(),
+      main: z.string(),
+      description: z.string(),
+      icon: z.string(),
+    }),
+  ),
   base: z.string(),
-  cod: z.number(),
-  clouds: z.object({
-    all: z.number(),
-  }),
-  message: z.string().optional(),
   main: z.object({
     temp: z.number(),
     feels_like: z.number(),
@@ -35,17 +27,32 @@ const weatherData = z.object({
     temp_max: z.number(),
     pressure: z.number(),
     humidity: z.number(),
+    sea_level: z.number().optional(),
+    grnd_level: z.number().optional(),
   }),
   visibility: z.number(),
+  wind: z
+    .object({ speed: z.number(), deg: z.number(), gust: z.number() })
+    .optional(),
+  rain: z.object({ '1h': z.number().optional() }).optional(),
+  clouds: z.object({ all: z.number() }).optional(),
+  dt: z.number(),
+  sys: z
+    .object({
+      type: z.number(),
+      id: z.number(),
+      country: z.string(),
+      sunrise: z.number(),
+      sunset: z.number(),
+    })
+    .optional(),
+  timezone: z.number(),
+  id: z.number(),
   name: z.string(),
-  wind: z.object({
-    deg: z.number(),
-    speed: z.number(),
-  }),
-  weather: z.array(weather),
+  cod: z.number(),
 })
 
-export type WeatherData = z.infer<typeof weatherData>
+export type WeatherData = z.infer<typeof weatherDataSchema>
 
 export interface WeatherWidgetProps {
   data: WeatherData
@@ -71,17 +78,20 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ data }) => {
               {/* <div className="text-xl">{currentDate}</div> */}
               <div className="text-xl font-bold">{data.name}</div>
               <ul className="mt-2 flex gap-2 text-sm">
-                <li className="">
-                  Luftfugtighed: <b>{data?.main.humidity}</b>
+                <li className="flex flex-col">
+                  <span>Luftfugtighed:</span>
+                  <b>{data?.main.humidity}</b>
                 </li>
-                <li className="">
-                  Vind:{' '}
-                  <b>
-                    {Math.round(data?.wind.speed)}{' '}
-                    <span className="lowercase">m/s</span>{' '}
-                    {data?.wind.deg && degreesToCompass(data?.wind.deg)}
-                  </b>
-                </li>
+                {data?.wind && (
+                  <li className="flex flex-col">
+                    <span>Vind:</span>
+                    <b>
+                      {Math.round(data?.wind?.speed)}{' '}
+                      <span className="lowercase">m/s</span>{' '}
+                      {data?.wind.deg && degreesToCompass(data?.wind.deg)}
+                    </b>
+                  </li>
+                )}
               </ul>
             </div>
           </div>

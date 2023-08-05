@@ -17,7 +17,8 @@ const getWeatherData = async (cityParam?: string) => {
     // This will activate the closest `error.ts` Error Boundary
     throw new Error(response.statusText)
   }
-  return response.json()
+  const data = await response.json()
+  return data as WeatherData
 }
 
 type PageProps = {
@@ -27,7 +28,7 @@ type PageProps = {
 
 export default async function Home({ searchParams }: PageProps) {
   const urlParams = searchParams['city']
-  const data: WeatherData = await getWeatherData(urlParams ?? null)
+  const data = await getWeatherData(urlParams ?? null)
 
   return (
     <main className="flex h-screen items-center justify-center">
