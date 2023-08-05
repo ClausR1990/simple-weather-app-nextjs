@@ -1,6 +1,26 @@
+# Weather widget
+
+**Implement a simple weather widget-like application for web browser using
+Node.js and React.**
+The widget shows basic weather information (temperature, humidity, wind) for
+a given Danish city.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 [Link to hosted Vercel App](https://simple-weather-app-nextjs.vercel.app/)
+
+## Acceptance criteria
+
+- [x] On the initial page load, the default city should be Copenhagen.
+- [x] The widget for any given city should be sharable with a url like https://simple-weather-app-nextjs.vercel.app/?city=Odense
+- [x] When the user selects a new city, the new data should be fetched by the browser and thus not require a page reload.
+      Despite not reloading the page, the url should still be updated to match the selected city.
+- [x] The widget should retain its basic functionality even if users disable JavaScript in a web browser.
+      Full page reloads are, of course, allowed in case of disabled JavaScript
+- [x] Use Node.js, TypeScript and React. Feel free to use any kind of frameworks/libraries.
+- [x] Basic unit tests are a requirement, but you decide the level of coverage.
+      The main point of this requirement is to see how you work with unit
+      tests, not that you cover the whole code base.
 
 ## Getting Started
 

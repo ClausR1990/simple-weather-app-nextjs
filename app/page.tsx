@@ -1,4 +1,4 @@
-import { WeatherWidget } from '@/components/WeatherWidget'
+import { WeatherData, WeatherWidget } from '@/components/WeatherWidget'
 
 const getWeatherData = async (cityParam?: string) => {
   const defaultCity = 'copenhagen'
@@ -27,7 +27,7 @@ type PageProps = {
 
 export default async function Home({ searchParams }: PageProps) {
   const urlParams = searchParams['city']
-  const data = await getWeatherData(urlParams ?? null)
+  const data: WeatherData = await getWeatherData(urlParams ?? null)
 
   return (
     <main className="flex h-screen items-center justify-center">

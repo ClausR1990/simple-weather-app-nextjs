@@ -37,7 +37,7 @@ type AddressDetailsResponce = z.infer<typeof addressDetailsResponse>
 const SearchBox: React.FC = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()!
+  const searchParams = useSearchParams()
   const [inputValue, setInputValue] = React.useState('')
   const [selectedValue, setSelectedValue] = React.useState<AddressData | null>(
     null,

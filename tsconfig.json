@@ -28,7 +28,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "jest.config.js"
+    "jest.config.js",
+    "components/WeatherWidget/WeatherWidget.mock.ts"
   ],
   "exclude": ["node_modules"]
 }
