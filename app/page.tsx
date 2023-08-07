@@ -7,6 +7,7 @@ const getWeatherData = async (cityParam?: string) => {
       cityParam?.trim() ?? defaultCity
     }&units=metric&lang=da&appid=${process.env.WEATHERAPP_APIKEY}`,
     {
+      cache: 'no-cache',
       next: {
         tags: ['weather'],
       },
